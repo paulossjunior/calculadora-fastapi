@@ -118,19 +118,41 @@ make docker-push-ghcr
 
 ---
 
-## 🤖 CI/CD Automatizado via GitHub Actions
+## ⚙️ Entendendo CI/CD no Projeto
 
-Sempre que você fizer `git push` para a branch `main` ou `master`:
+### 📚 O que é CI e CD?
 
-- Os testes são executados automaticamente.
-- Se os testes passarem, a imagem Docker é buildada.
-- A imagem é enviada para o GitHub Packages (`ghcr.io/SEU_USUARIO/fastapi-calculator:latest`).
+| Termo | Significado | Explicação |
+|:------|:------------|:-----------|
+| CI (Continuous Integration) | Integração Contínua | Processo de testar automaticamente todas as mudanças feitas no código assim que elas são enviadas para o repositório. Garante que o código novo **não quebre** o sistema existente. |
+| CD (Continuous Delivery) | Entrega Contínua | Processo de preparar e disponibilizar automaticamente a aplicação para deploy após a aprovação dos testes. |
 
-**Arquivo de workflow:** `.github/workflows/docker-build.yml`
+Em resumo:
+- **CI** = Rodar testes automáticos para validar o código.
+- **CD** = Preparar o código e publicá-lo em um ambiente (neste caso, criando a imagem Docker no GitHub Packages).
 
 ---
 
-## 🔐 Permissões Necessárias no GitHub
+### 🛠️ Como funciona o fluxo de CI/CD neste projeto?
+
+Quando você faz um `git push` para a branch `main` ou `master`:
+
+1. **Test Job (🧪)** é iniciado:
+   - Faz checkout do repositório.
+   - Instala as dependências do projeto.
+   - Roda todos os testes com `pytest`.
+2. Se **todos os testes passarem**:
+   - **Deploy Job (🚀)** é iniciado automaticamente.
+   - Faz login no GitHub Container Registry (`ghcr.io`).
+   - Builda a imagem Docker da aplicação.
+   - Faz o push da imagem para o GitHub Packages (`ghcr.io/SEU_USUARIO/fastapi-calculator`).
+
+Se **os testes falharem**, o deploy **não acontece**.
+
+---
+
+
+### 🔐 Permissões Necessárias no GitHub
 
 O Actions usa o `GITHUB_TOKEN` nativo para:
 - Fazer login no GitHub Container Registry.
@@ -143,9 +165,8 @@ permissions:
   packages: write
 ```
 
----
 
-## 📦 Como acessar sua imagem no GitHub Packages
+### 📦 Como acessar sua imagem no GitHub Packages
 
 Depois de publicado:
 
